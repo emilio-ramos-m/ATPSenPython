@@ -11,10 +11,10 @@ n = len(costs)
 V = range(n)
 A = [(i, j) for i in V for j in V if i != j]
 
-# Variables: x[i][j] is 1 if the tour goes from i to j
+# Crear variables de decision
 x = pulp.LpVariable.dicts("x", A, cat=pulp.LpBinary)
 
-# GG specific variables: g[i][j] is the flow on arc from i to j
+# Variables especificas GG 
 g = pulp.LpVariable.dicts("g", ((i, j) for i in V for j in V if i != j), lowBound=0, cat=pulp.LpContinuous)
 
 
@@ -23,10 +23,10 @@ prob += pulp.lpSum(costs[i][j] * x[i, j] for i in V for j in V if i != j)
 
 # Restrictiones
 for i in V:
-    prob += pulp.lpSum(x[j, i] for j in V if i != j) == 1#, f"Only_one_incoming_arc_{i}"
-    prob += pulp.lpSum(x[i, j] for j in V if i != j) == 1#, f"Only_one_outgoing_arc_{i}"
+    prob += pulp.lpSum(x[j, i] for j in V if i != j) == 1
+    prob += pulp.lpSum(x[i, j] for j in V if i != j) == 1
 
-# Restriccion esoecifica de GG: Flujo de salida del nodo 1 es 1
+# Restriccion especifica de GG
 for i in V:
     if(i>=1):
         prob += pulp.lpSum(g[(i,j)] for j in V if i != j) - pulp.lpSum(g[(j,i)] for j in V if j>=1 and i != j) == 1
@@ -35,7 +35,7 @@ for i in V:
 for i in V:
     for j in V:
         if i != j:
-            prob += g[i, j] <= (n - 1) * x[i, j]#, f"Capacity_constraint_arc_{i}_{j}"
+            prob += g[i, j] <= (n - 1) * x[i, j]
 
 # Resolver el problema
 prob.solve()

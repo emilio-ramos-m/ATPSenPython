@@ -11,10 +11,10 @@ n = len(costs)
 V = range(n)
 A = [(i, j) for i in V for j in V if i != j]
 
-# Variables: x[i][j] es 1 si el tour va de i a j
+# Crear variables de decision
 x = pulp.LpVariable.dicts("x", A, cat=pulp.LpBinary)
 
-# MTZ variables especificas: u[i] es la posición del nodo i en el tour
+# MTZ variables especificas
 u = pulp.LpVariable.dicts("u", (i for i in V), lowBound=0, cat=pulp.LpContinuous)
 
 #Funcion objetivo: Minimizar la suma de los costos de los arcos elegidos
