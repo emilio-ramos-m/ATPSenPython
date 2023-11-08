@@ -1,16 +1,28 @@
 import pulp
+from extraerMatriz import read_atsp_file
 
 # Crear problema de minimización
 prob = pulp.LpProblem("ATSP_MTZ", pulp.LpMinimize)
 
-# Example data: cost matrix (could be obtained from the document or defined by the user)
-# Assume a 4-node problem for illustration (the matrix should be n x n for n nodes)
-costs = [
-    [9999, 20, 30, 10],
-    [20, 9999, 15, 25],
-    [30, 15, 9999, 5],
-    [10, 25, 5, 9999]
-]
+costs = read_atsp_file("instancias/inst1_10.atsp")
+
+costs=[[9999, 3, 5, 48, 48, 8, 8, 5, 5,3, 3, 0, 3, 5, 8, 8, 5],
+   [3, 9999, 3, 48, 48, 8, 8, 5, 5, 0 ,0 ,3 ,0 ,3 ,8 ,8, 5],
+   [5, 3, 9999, 72, 72, 48, 48, 24, 24, 3, 3, 5, 3, 0, 48, 48, 24],
+   [48, 48, 74, 9999, 0, 6, 6, 12, 12, 48, 48, 48, 48, 74, 6, 6, 12],
+   [48, 48, 74, 0, 9999, 6, 6, 12, 12, 48, 48, 48, 48, 74, 6, 6, 12],
+   [8, 8, 50, 6, 6, 9999, 0, 8, 8, 8, 8, 8, 8, 50, 0, 0, 8],
+   [8, 8, 50, 6, 6, 0, 9999, 8, 8, 8, 8, 8, 8,50, 0, 0, 8],
+   [5, 5, 26, 12, 12, 8, 8, 9999, 0, 5, 5, 5, 5, 26, 8, 8, 0],
+   [5, 5, 26, 12, 12, 8, 8, 0, 9999, 5, 5, 5, 5, 26, 8, 8, 0],
+   [3, 0, 3, 48, 48, 8, 8, 5, 5, 9999, 0, 3, 0, 3, 8, 8, 5],
+   [3, 0, 3, 48, 48, 8, 8, 5, 5, 0, 9999, 3, 0, 3, 8, 8, 5],
+   [0, 3, 5, 48, 48, 8, 8, 5, 5, 3, 3, 9999, 3, 5, 8, 8, 5],
+   [3, 0, 3, 48, 48, 8, 8, 5, 5, 0, 0, 3, 9999, 3, 8, 8, 5],
+   [5, 3, 0, 72, 72, 48, 48, 24, 24, 3, 3, 5, 3, 9999, 48, 48, 24],
+   [8, 8, 50, 6, 6, 0, 0, 8, 8, 8, 8, 8, 8, 50, 9999, 0, 8],
+   [8, 8, 50, 6, 6, 0, 0, 8, 8, 8, 8, 8, 8, 50, 0, 9999, 8],
+   [5, 5, 26, 12, 12, 8, 8, 0, 0, 5, 5, 5, 5, 26, 8, 8, 9999]]
 
 # Conjunto de nodos y aristas
 n = len(costs)
@@ -28,17 +40,14 @@ prob += pulp.lpSum(costs[i][j] * x[i, j] for i in V for j in V if i != j)
 
 # Restrictiones
 for i in V:
-    prob += pulp.lpSum(x[j, i] for j in V if i != j) == 1#, f"Only_one_incoming_arc_{i}"
-    prob += pulp.lpSum(x[i, j] for j in V if i != j) == 1#, f"Only_one_outgoing_arc_{i}"
+    prob += pulp.lpSum(x[j, i] for j in V if i != j) == 1
+    prob += pulp.lpSum(x[i, j] for j in V if i != j) == 1
 
 # Eliminación de subtours de MTZ
 for i in range(1, n):
     for j in range(1, n):
         if i != j:
             prob += u[i] - u[j] + (n * x[i, j]) <= n - 1
-
-# Additional constraint for u[0] since it's the first node in the MTZ formulation
-#prob += u[0] == 0
 
 # Resolver el problema
 prob.solve()
@@ -49,14 +58,3 @@ for (i, j) in A:
     if x[(i, j)].varValue == 1:
         print(f"x({i},{j}) = 1")
 print("Optimal value =", pulp.value(prob.objective))
-
-# Imprimir la solución
-#print("Status:", pulp.LpStatus[prob.status])
-
-# Print the optimal tour
-#tour = [(i, j) for i in V for j in V if i != j and pulp.value(x[i, j]) == 1]
-#print("Optimal Tour:", tour)
-
-# Total cost of the tour
-#total_cost = sum(costs[i][j] for i, j in tour)
-#print("Total Cost of the Tour:", total_cost)
