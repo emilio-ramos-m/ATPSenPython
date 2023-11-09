@@ -1,3 +1,4 @@
+# Extraer la matriz de un archivo .atsp
 def read_atsp_file(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -18,6 +19,7 @@ def read_atsp_file(file_path):
 
     return matrix
 
+# Extraer todas las matrices de los archivos .atsp
 def extraerMatrices():
     matrices = []
     matrix1 = read_atsp_file("instancias/inst1_10.atsp")
@@ -42,7 +44,7 @@ def extraerMatrices():
     matrices.append(matrix10)
     return matrices
 
-
+# Imprimir una matriz
 def print_matrix(matrix):
     for i in matrix:
         for j in i:

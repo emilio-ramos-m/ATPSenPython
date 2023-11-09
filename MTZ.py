@@ -4,6 +4,7 @@ from extraerMatriz import read_atsp_file
 # Crear problema de minimización
 prob = pulp.LpProblem("ATSP_MTZ", pulp.LpMinimize)
 
+# Se carga el archivo con la matriz de costos
 costs = read_atsp_file("instancias/inst1_10.atsp")
 
 # Conjunto de nodos y aristas
